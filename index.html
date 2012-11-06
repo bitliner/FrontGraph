@@ -1,0 +1,69 @@
+<html>
+<head>
+	<title>Graph Drawing</title>
+	<style>
+	#sig-cont{
+		width:500px;
+		height:500px;
+	}
+	#sig{
+		width:100%;
+		height:100%;
+	}
+	</style>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<script type="text/javascript" src="sigma.min.js"></script>
+	<script type="text/javascript">
+
+	function init() {
+		var sigInst = sigma.init(document.getElementById('sig')).drawingProperties({
+			defaultLabelColor: '#fff'
+		});
+
+		var i, N = 500, E = 3000, C = 5, d = 0.5, clusters = [];
+		for(i = 0; i < C; i++){
+			clusters.push({
+				'id': i,
+				'nodes': [],
+				'color': 'rgb('+Math.round(Math.random()*256)+','+
+					Math.round(Math.random()*256)+','+
+					Math.round(Math.random()*256)+')'
+		});
+		}
+
+		for(i = 0; i < N; i++){
+			var cluster = clusters[(Math.random()*C)|0];
+			sigInst.addNode('n'+i,{
+				'x': Math.random(),
+				'y': Math.random(),
+				'size': 0.5+4.5*Math.random(),
+				'color': cluster['color'],
+				'cluster': cluster['id']
+			});
+			cluster.nodes.push('n'+i);
+		}
+
+		for(i = 0; i < E; i++){
+			if(Math.random() < 1-d){
+				sigInst.addEdge(i,'n'+(Math.random()*N|0),'n'+(Math.random()*N|0));
+			}else{
+				var cluster = clusters[(Math.random()*C)|0], n = cluster.nodes.length;
+				sigInst.addEdge(i,cluster.nodes[Math.random()*n|0],cluster.nodes[Math.random()*n|0]);
+			}
+		}
+	}
+	if (document.addEventListener) {
+		document.addEventListener("DOMContentLoaded", init, false);
+	} else {
+		window.onload = init;
+	}
+	</script>
+</head>
+<body>
+	<div id="sig-cont">
+		<div id="sig"></div>
+	</div>
+	<!-- <textarea rows="25" cols="25"></textarea> -->
+	
+</body>
+</html>
