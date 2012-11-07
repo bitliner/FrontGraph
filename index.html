@@ -1,56 +1,88 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Graph Drawing</title>
 	<style>
 	#sig-cont{
-		width:500px;
 		height:500px;
 	}
 	#sig{
 		width:100%;
 		height:100%;
 	}
+	.h500{
+		height:500px;
+	}
 	</style>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
+	<script type="text/javascript" src="jquery.min.js"></script>
 	<script type="text/javascript" src="sigma.min.js"></script>
 	<script type="text/javascript">
 
+	/* TODO: weight of edges must be represented by intensity of its color and not by size */
+	/* TODO: consider changes to edges and nodes already added to graph */
+
+	var sigInst
+	$(document).ready(function(){
+		var nodes=[] 
+		,	edges=[]
+
+		$('#generate').click(function(){
+
+			var val=$('#textarea').val()
+			var triples=val.split('\n')
+			triples.forEach(function(e){
+				var elements=e.split(',')
+				,	v1=elements[0]
+				,	v2=elements[1]
+				,	w=(elements.length==3)?elements[2]:1
+				if ( nodes.indexOf(v1)<0 ){
+					sigInst.addNode(v1,{
+						'x': Math.random(),
+						'y': Math.random(),
+						'size': 4.5
+					})
+					nodes.push(v1)	
+				}
+				if ( nodes.indexOf(v2)<0 ){
+					sigInst.addNode(v2,{
+						'x': Math.random(),
+						'y': Math.random(),
+						'size': 4.5,
+						color: '#91F102'
+					})
+					nodes.push(v2)		
+				}
+				if (edges.indexOf(v1+v2)<0){
+					var e=v1+v2
+					console.log(e);
+					sigInst.addEdge(e,v1,v2,{
+						weight: w,
+						size: w
+					})
+					edges.push(e)
+				}
+				
+			})
+			console.log(nodes,edges);
+
+		})
+	})
+
+	
 	function init() {
-		var sigInst = sigma.init(document.getElementById('sig')).drawingProperties({
-			defaultLabelColor: '#fff'
+		sigInst = sigma.init(document.getElementById('sig')).drawingProperties({
+			defaultLabelColor: '#fff',
+			defaultLabelSize: 14,
+			defaultLabelBGColor: '#fff',
+			defaultLabelHoverColor: '#000',
+			labelThreshold: 6,
+			defaultEdgeType: 'curve'
+
 		});
-
-		var i, N = 500, E = 3000, C = 5, d = 0.5, clusters = [];
-		for(i = 0; i < C; i++){
-			clusters.push({
-				'id': i,
-				'nodes': [],
-				'color': 'rgb('+Math.round(Math.random()*256)+','+
-					Math.round(Math.random()*256)+','+
-					Math.round(Math.random()*256)+')'
-		});
-		}
-
-		for(i = 0; i < N; i++){
-			var cluster = clusters[(Math.random()*C)|0];
-			sigInst.addNode('n'+i,{
-				'x': Math.random(),
-				'y': Math.random(),
-				'size': 0.5+4.5*Math.random(),
-				'color': cluster['color'],
-				'cluster': cluster['id']
-			});
-			cluster.nodes.push('n'+i);
-		}
-
-		for(i = 0; i < E; i++){
-			if(Math.random() < 1-d){
-				sigInst.addEdge(i,'n'+(Math.random()*N|0),'n'+(Math.random()*N|0));
-			}else{
-				var cluster = clusters[(Math.random()*C)|0], n = cluster.nodes.length;
-				sigInst.addEdge(i,cluster.nodes[Math.random()*n|0],cluster.nodes[Math.random()*n|0]);
-			}
-		}
 	}
 	if (document.addEventListener) {
 		document.addEventListener("DOMContentLoaded", init, false);
@@ -60,10 +92,23 @@
 	</script>
 </head>
 <body>
-	<div id="sig-cont">
-		<div id="sig"></div>
+	<div class="container">
+		<div class="row">
+			<div class="span6">
+				<div id="sig-cont" style="background-color:#222;">
+					<div id="sig"></div>
+				</div>
+			</div>
+			<div class="span6">
+				<div class="span5 well">
+						<textarea id="textarea" class="span5" id="new_message" name="new_message"
+						placeholder="v1,v2,weight" rows="15"></textarea>
+						<h6 class="pull-right"></h6>
+						<button id="generate" class="btn btn-info">Generate graph</button>
+				</div>
+			</div>
+		</div>
 	</div>
-	<!-- <textarea rows="25" cols="25"></textarea> -->
-	
+
 </body>
 </html>
