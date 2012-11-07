@@ -1,5 +1,7 @@
 # FrontGraph
 
+FrontGraph is simple HTML5 app to quickly draw graphs
+
 ## How to use it
 
 * clone repository: `clone git@github.com:bitliner/FrontGraph.git`
