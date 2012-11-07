@@ -1,4 +1,4 @@
-# Tool for graph drawing
+# FrontGraph
 
 ## How to use it
 
